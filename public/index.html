@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>凛の魔法图书馆</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; }
+    .book { border: 2px solid #c00; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <h1>📖 魔導書リスト</h1>
+  <div id="books"></div>
+
+  <script>
+    fetch('/api/books')
+      .then(res => res.json())
+      .then(books => {
+        const container = document.getElementById('books');
+        books.forEach(book => {
+          container.innerHTML += `
+            <div class="book">
+              <h3>${book.title}</h3>
+              <p>著者: ${book.author}</p>
+            </div>
+          `;
+        });
+      });
+  </script>
+</body>
+</html>
