@@ -1,0 +1,18 @@
+import pool from '../lib/db.js';
+
+export const listPlants = async (req, res) => {
+  try {
+    const [plants] = await pool.query(`
+      SELECT p.*, GROUP_CONCAT(s.type_name) AS suitable_soils
+      FROM plants p
+      LEFT JOIN plant_soil_compatibility ps ON p.plant_id = ps.plant_id
+      LEFT JOIN soils s ON ps.soil_id = s.soil_id
+      GROUP BY p.plant_id
+      LIMIT 100
+    `);
+    res.json(plants);
+  } catch (err) {
+    console.error('[魔术失败] 植物检索错误:', err);
+    res.status(500).json({ error: 'サーバーエラー' });
+  }
+};
