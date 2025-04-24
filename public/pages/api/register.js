@@ -1,11 +1,10 @@
-
 import mysql from 'mysql2';
 
 const dbConfig = {
   host: process.env.DB_HOST,  // 从环境变量中获取数据库主机地址
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  database: process.env.DB_NAME, // 使用 test999 数据库
 };
 
 const pool = mysql.createPool(dbConfig);
@@ -20,9 +19,9 @@ export default async function handler(req, res) {
     }
 
     try {
-      // 查询数据库获取用户信息
+      // 根据用户名查询数据库获取用户信息
       const [rows] = await promisePool.query(
-        'SELECT name, id, password FROM login WHERE username = ?',
+        'SELECT id, name, password FROM login WHERE name = ?',
         [username]
       );
 
@@ -35,9 +34,9 @@ export default async function handler(req, res) {
       res.status(200).json({
         status: 'success',
         data: {
-          username: user.username,
-          email: user.email,
-          password_hash: user.password_hash,  // 返回的是加密后的密码
+          id: user.id,
+          name: user.name,
+          password: user.password,  // 返回的是加密后的密码
         }
       });
     } catch (error) {
@@ -49,3 +48,4 @@ export default async function handler(req, res) {
     res.status(405).json({ status: 'error', message: 'Method not allowed' });
   }
 }
+
