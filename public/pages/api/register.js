@@ -1,14 +1,19 @@
 import mysql from 'mysql2';
 
+// 使用连接池来管理数据库连接
 const dbConfig = {
   host: process.env.DB_HOST,  // 从环境变量中获取数据库主机地址
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME, // 使用 test999 数据库
+  waitForConnections: true, // 等待连接可用
+  connectionLimit: 10,      // 连接池最大连接数
+  queueLimit: 0             // 队列中无限等待连接请求
 };
 
+// 创建连接池
 const pool = mysql.createPool(dbConfig);
-const promisePool = pool.promise();
+const promisePool = pool.promise(); // 获取promise化的连接池，方便用 async/await
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -19,7 +24,7 @@ export default async function handler(req, res) {
     }
 
     try {
-      // 根据 name 查询数据库获取用户信息
+      // 使用连接池查询数据库
       const [rows] = await promisePool.query(
         'SELECT id, name, password FROM login WHERE name = ?',
         [name]
