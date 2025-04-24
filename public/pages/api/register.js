@@ -12,17 +12,17 @@ const promisePool = pool.promise();
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { username } = req.query;  // 从查询参数中获取 username
+    const { name } = req.query;  // 从查询参数中获取 name
 
-    if (!username) {
-      return res.status(400).json({ status: 'error', message: 'Username is required' });
+    if (!name) {
+      return res.status(400).json({ status: 'error', message: 'Name is required' });
     }
 
     try {
-      // 根据用户名查询数据库获取用户信息
+      // 根据 name 查询数据库获取用户信息
       const [rows] = await promisePool.query(
         'SELECT id, name, password FROM login WHERE name = ?',
-        [username]
+        [name]
       );
 
       if (rows.length === 0) {
@@ -48,4 +48,3 @@ export default async function handler(req, res) {
     res.status(405).json({ status: 'error', message: 'Method not allowed' });
   }
 }
-
